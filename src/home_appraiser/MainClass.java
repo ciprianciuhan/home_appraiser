@@ -1,6 +1,7 @@
 package home_appraiser;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.jsoup.Jsoup;
@@ -48,6 +49,9 @@ public class MainClass {
 		}
 		*/
 		
+		ArrayList <String> vector_preturi = new ArrayList<String>();
+		int i = 0;
+		
 		try {
 			/*
 			Document doc = Jsoup.connect("https://www.olx.ro/imobiliare/" + tip_casa_url + "-de-vanzare/" + property.getNrCamere() 
@@ -55,16 +59,20 @@ public class MainClass {
 			+ "&search%5Bfilter_float_m%3Ato%5D=" + sup_max).userAgent("Mozilla/17.0").get();
 			*/
 			
-			Document doc = Jsoup.connect("https://www.olx.ro/imobiliare/apartamente-garsoniere-de-vanzare/2-camere/bucuresti/?search%5Bfilter_float_m%3Afrom%5D=35&search%5Bfilter_float_m%3Ato%5D=45").userAgent("Mozilla/17.0").get();
+			Document doc = Jsoup.connect("https://www.olx.ro/imobiliare/apartamente-garsoniere-de-vanzare/2-camere/bucuresti/?search%5Bfilter_float_m%3Afrom%5D=35&search%5Bfilter_float_m%3Ato%5D=45").get();
 			Elements temp = doc.select("p.price");
 			
-			int i = 0;
+			
+			
+			//ArrayList <String> vector_preturi = new ArrayList<String>();
 			
 			for (Element priceList:temp) {
 				
 				i += 1;
 				
-				System.out.println(i + " " + priceList.getElementsByTag("strong").first().text());
+				//System.out.println(i + " " + priceList.getElementsByTag("strong").first().text());
+				
+				vector_preturi.add(priceList.getElementsByTag("strong").first().text());
 				
 				
 			}
@@ -73,6 +81,10 @@ public class MainClass {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		
+		for (int x = 0; x < i; x++) {
+			System.out.println(vector_preturi.get(x));
 		}
 		
 		
