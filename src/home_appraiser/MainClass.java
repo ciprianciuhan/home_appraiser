@@ -3,6 +3,7 @@ package home_appraiser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Arrays;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,11 +24,11 @@ public class MainClass {
 		
 		property.setType(input.nextLine());
 		
-		System.out.println("Orasul: ");
+		System.out.println("Orasul (pentru Ilfov Bucuresti-Ilfov): ");
 		
 		property.setOras(input.nextLine());
 		
-		System.out.println("Cartierul: ");
+		System.out.println("Cartierul (pentru Ilfov, localitatea): ");
 		
 		property.setCartier(input.nextLine());
 		
@@ -78,6 +79,7 @@ public class MainClass {
 		
 		
 		ArrayList <String> vector_preturi = new ArrayList<String>();
+		
 		int i = 0;
 		
 		//asta e pentru olx
@@ -112,19 +114,15 @@ public class MainClass {
 		*/
 		
 		//asta e pentru imobiliare.ro
-		
-		
+			
 		try {
 			Document doc = Jsoup.connect("https://www.imobiliare.ro/vanzare-" + tip_casa_url + "/" + property.getOras().toLowerCase() + "/" + cartier + "?nrcamere=" + nr_camere).get();
 			Elements temp = doc.select("div.pret");
 			
 			//System.out.println("link-ul este " + "https://www.imobiliare.ro/vanzare-" + tip_casa_url + "/" + property.getOras().toLowerCase() + "/" + cartier + "?nrcamere=" + nr_camere);
 			
-			//TODO: sa fac diferentierea in functie de suprafata
-			
-			
-			
 			for (Element priceList:temp) {
+				
 				i += 1;
 				
 				vector_preturi.add(priceList.getElementsByClass("pret-mare").first().text());
@@ -135,9 +133,48 @@ public class MainClass {
 			e.printStackTrace();
 		}
 		
-		for (int x = 0; x < i; x++) {
-			System.out.println(vector_preturi.get(x));
+		
+		
+//		for (int x = 0; x < i; x++) {
+//			System.out.println(vector_preturi.get(x));
+//		}
+		
+		//conversia in vector de inti
+		
+		int preturi[] = new int[vector_preturi.size()];
+		
+		for (int x = 0; x < vector_preturi.size(); x++) {
+			
+			String aux = vector_preturi.get(x).substring(0, vector_preturi.get(x).indexOf('.')) + vector_preturi.get(x).substring(vector_preturi.get(x).indexOf('.')+1);
+			
+			preturi[x] = Integer.parseInt(aux);
+			
 		}
+		
+		long avg = 0;
+		
+		for (int x = 0; x < vector_preturi.size(); x++) {
+			avg += preturi[x];
+		}
+		
+		avg /= vector_preturi.size();
+		
+		int ieftin = 0, scump = 0;
+		
+		Arrays.sort(preturi);
+		
+		ieftin = preturi[0];
+		scump = preturi[vector_preturi.size()-1];
+		
+		System.out.println("Pretul mediu pentru apartamentul dumneavoastra este: " + avg + " Euro");
+		System.out.println("Cea mai ieftina proprietate din zona: " + ieftin + " Euro");
+		System.out.println("Cea mai scumpa proprietate din zona: " + scump + " Euro");
+		
+//		for (int x = 0; x < vector_preturi.size(); x++) {
+//			System.out.println(preturi[x]);
+//		}
+		
+		
 		
 		//trebuie sa fac un for sau ceva care sa ma duca prin toate paginile fara sa imi dea eroare 
 		//ca sa pot sa adun cat mai multe preturi
