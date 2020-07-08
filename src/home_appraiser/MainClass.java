@@ -115,22 +115,52 @@ public class MainClass {
 		
 		//asta e pentru imobiliare.ro
 			
-		try {
-			Document doc = Jsoup.connect("https://www.imobiliare.ro/vanzare-" + tip_casa_url + "/" + property.getOras().toLowerCase() + "/" + cartier + "?nrcamere=" + nr_camere).get();
-			Elements temp = doc.select("div.pret");
-			
-			//System.out.println("link-ul este " + "https://www.imobiliare.ro/vanzare-" + tip_casa_url + "/" + property.getOras().toLowerCase() + "/" + cartier + "?nrcamere=" + nr_camere);
-			
-			for (Element priceList:temp) {
+//		try {
+//			Document doc = Jsoup.connect("https://www.imobiliare.ro/vanzare-" + tip_casa_url + "/" + property.getOras().toLowerCase() + "/" + cartier + "?nrcamere=" + nr_camere).get();
+//			Elements temp = doc.select("div.pret");
+//			
+//			//System.out.println("link-ul este " + "https://www.imobiliare.ro/vanzare-" + tip_casa_url + "/" + property.getOras().toLowerCase() + "/" + cartier + "?nrcamere=" + nr_camere);
+//			
+//			for (Element priceList:temp) {
+//				
+//				i += 1;
+//				
+//				vector_preturi.add(priceList.getElementsByClass("pret-mare").first().text());
+//			}
+//			
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		int pagina = 1;
+		
+		while (true) {
+			try {
+				Document doc = Jsoup.connect("https://www.imobiliare.ro/vanzare-" + tip_casa_url + "/" + property.getOras().toLowerCase() + "/" + cartier + "?nrcamere=" + nr_camere + "&pagina=" + pagina).get();
+				Elements temp = doc.select("div.pret");
 				
-				i += 1;
+				//System.out.println("link-ul este " + "https://www.imobiliare.ro/vanzare-" + tip_casa_url + "/" + property.getOras().toLowerCase() + "/" + cartier + "?nrcamere=" + nr_camere);
 				
-				vector_preturi.add(priceList.getElementsByClass("pret-mare").first().text());
+				for (Element priceList:temp) {
+					
+					i += 1;
+					
+					vector_preturi.add(priceList.getElementsByClass("pret-mare").first().text());
+				}
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			pagina += 1;
+			
+			//scanez 30 de pagini de rezultate, cu cate 30 de anunturi, aka 900 de rezultate
+			
+			if (pagina == 30) {
+				break;
+			}
 		}
 		
 		
@@ -143,9 +173,17 @@ public class MainClass {
 		
 		int preturi[] = new int[vector_preturi.size()];
 		
+		//TODO: de reparat cand o casa costa un milion de euro sau mai mult
+		//REPARAT
+		
 		for (int x = 0; x < vector_preturi.size(); x++) {
 			
-			String aux = vector_preturi.get(x).substring(0, vector_preturi.get(x).indexOf('.')) + vector_preturi.get(x).substring(vector_preturi.get(x).indexOf('.')+1);
+//			String aux = vector_preturi.get(x).substring(0, vector_preturi.get(x).indexOf('.')) + vector_preturi.get(x).substring(vector_preturi.get(x).indexOf('.')+1);
+			String aux = vector_preturi.get(x);
+			while (aux.indexOf('.') != -1) {
+				aux = aux.substring(0, aux.indexOf('.')) + aux.substring(aux.indexOf('.')+1);
+
+			}
 			
 			preturi[x] = Integer.parseInt(aux);
 			
@@ -166,7 +204,7 @@ public class MainClass {
 		ieftin = preturi[0];
 		scump = preturi[vector_preturi.size()-1];
 		
-		System.out.println("Pretul mediu pentru apartamentul dumneavoastra este: " + avg + " Euro");
+		System.out.println("Pretul estimat pentru proprietatea dumneavoastra este: " + avg + " Euro");
 		System.out.println("Cea mai ieftina proprietate din zona: " + ieftin + " Euro");
 		System.out.println("Cea mai scumpa proprietate din zona: " + scump + " Euro");
 		
@@ -175,12 +213,10 @@ public class MainClass {
 //		}
 		
 		
-		
 		//trebuie sa fac un for sau ceva care sa ma duca prin toate paginile fara sa imi dea eroare 
 		//ca sa pot sa adun cat mai multe preturi
 		//dupa trebuie sa convertesc preturile in int si sa sortez vectorul, apoi sa afisez min, max si 
 		//sa fac media pentru apartament, cumva printr-o diferentiere a cartierelor
-		
 		
 		
 		/*
