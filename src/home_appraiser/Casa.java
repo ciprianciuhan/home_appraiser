@@ -6,6 +6,15 @@ public class Casa {
 	private String tip;
 	private int nr_camere;
 	private String oras;
+	private String cartier;
+	
+	public String getCartier() {
+		return cartier;
+	}
+	
+	public void setCartier(String cartier) {
+		this.cartier = cartier;
+	}
 	
 	public String getOras() {
 		return oras;
@@ -44,6 +53,7 @@ public class Casa {
 		this.setNrCamere(nr_camere);
 		this.setOras(oras);
 		this.setType(tip);
+		this.setCartier(cartier);
 	}
 	
 }

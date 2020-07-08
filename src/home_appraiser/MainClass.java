@@ -10,8 +10,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 
-
-
 public class MainClass {
 
 	public static void main(String[] args) {
@@ -29,6 +27,11 @@ public class MainClass {
 		
 		property.setOras(input.nextLine());
 		
+		System.out.println("Cartierul: ");
+		
+		property.setCartier(input.nextLine());
+		
+		
 		System.out.println("Suprafata in metri patrati: ");
 		
 		property.setSuprafata(input.nextFloat());
@@ -37,15 +40,28 @@ public class MainClass {
 		
 		property.setNrCamere(input.nextInt());
 		
-		int sup_min = (int) property.getSuprafata() - 5;
-		int sup_max = (int) property.getSuprafata() + 5;
+		int sup_min = (int) (property.getSuprafata()/10)*10;
+		int sup_max = (int) (property.getSuprafata()/10)*10;
 		
 		String tip_casa_url = "";
 		
+		//Momentan incerc sa imi dau seama care site este mai ok pentru scraping de informatii
+		//As prefera imobiliare pentru ca ma lasa sa caut si dupa cartier
+		
+		//asta e pentru olx
+		
+//		if (property.getType().charAt(0) == 'c') {
+//			tip_casa_url = "case";
+//		} else {
+//			tip_casa_url = "apartamente-garsoniere";
+//		}
+		
+		//asta e pentru imobiliare.ro
+		
 		if (property.getType().charAt(0) == 'c') {
-			tip_casa_url = "case";
+			tip_casa_url = "case-vile";
 		} else {
-			tip_casa_url = "apartamente-garsoniere";
+			tip_casa_url = "apartamente";
 		}
 		
 		int nr_camere = 0;
@@ -54,12 +70,18 @@ public class MainClass {
 			nr_camere = 4;
 		} else nr_camere = property.getNrCamere();
 		
-		System.out.println(tip_casa_url);
+		String cartier = property.getCartier();
+		
+		//cartier.replace(' ', '-');
+		
+		//System.out.println(tip_casa_url);
 		
 		
 		ArrayList <String> vector_preturi = new ArrayList<String>();
 		int i = 0;
 		
+		//asta e pentru olx
+		/*
 		try {
 			
 			Document doc = Jsoup.connect("https://www.olx.ro/imobiliare/" + tip_casa_url + "-de-vanzare/" + nr_camere 
@@ -85,6 +107,31 @@ public class MainClass {
 			
 			
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		*/
+		
+		//asta e pentru imobiliare.ro
+		
+		
+		try {
+			Document doc = Jsoup.connect("https://www.imobiliare.ro/vanzare-" + tip_casa_url + "/" + property.getOras().toLowerCase() + "/" + cartier + "?nrcamere=" + nr_camere).get();
+			Elements temp = doc.select("div.pret");
+			
+			//System.out.println("link-ul este " + "https://www.imobiliare.ro/vanzare-" + tip_casa_url + "/" + property.getOras().toLowerCase() + "/" + cartier + "?nrcamere=" + nr_camere);
+			
+			//TODO: sa fac diferentierea in functie de suprafata
+			
+			
+			
+			for (Element priceList:temp) {
+				i += 1;
+				
+				vector_preturi.add(priceList.getElementsByClass("pret-mare").first().text());
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
