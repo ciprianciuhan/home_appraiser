@@ -140,6 +140,19 @@ public class MainClass {
 				Document doc = Jsoup.connect("https://www.imobiliare.ro/vanzare-" + tip_casa_url + "/" + property.getOras().toLowerCase() + "/" + cartier + "?nrcamere=" + nr_camere + "&pagina=" + pagina).get();
 				Elements temp = doc.select("div.pret");
 				
+				Elements carac = doc.select("ul.caracteristici");
+				
+				for (Element caracte:carac) {
+					Elements spans = caracte.getElementsByTag("span");
+					
+					System.out.println();
+					for (Element span:spans) {
+						System.out.println(span.text());
+					}
+					
+					
+				}
+				
 				//System.out.println("link-ul este " + "https://www.imobiliare.ro/vanzare-" + tip_casa_url + "/" + property.getOras().toLowerCase() + "/" + cartier + "?nrcamere=" + nr_camere);
 				
 				for (Element priceList:temp) {
